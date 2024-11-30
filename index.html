@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group label {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .form-group input:focus,
+        .form-group input:valid {
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+
+        .form-group input:focus + label,
+        .form-group input:valid + label {
+            top: 0;
+            font-size: 0.8rem;
+            background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+            padding: 0 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .login-button:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1.5rem;
+            }
+
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Bienvenido</h1>
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="email" id="email" required>
+                <label for="email">Correo electrónico</label>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" required>
+                <label for="password">Contraseña</label>
+            </div>
+            <button type="submit" class="login-button">Iniciar sesión</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Simulación de login
+            const button = document.querySelector('.login-button');
+            button.style.pointerEvents = 'none';
+            button.textContent = 'Iniciando sesión...';
+            
+            // Agregamos un pequeño retraso para mostrar la animación
+            setTimeout(() => {
+                button.textContent = '¡Bienvenido!';
+                
+                // Redirigimos al ecommerce después de mostrar el mensaje de bienvenida
+                setTimeout(() => {
+                    window.location.href = 'ecommerce.html';
+                }, 1000);
+            }, 1500);
+        });
+
+        // Efecto de ripple en el botón
+        document.querySelector('.login-button').addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const circle = document.createElement('div');
+            circle.style.position = 'absolute';
+            circle.style.left = x + 'px';
+            circle.style.top = y + 'px';
+            circle.style.width = '1px';
+            circle.style.height = '1px';
+            circle.style.background = 'rgba(255, 255, 255, 0.3)';
+            circle.style.borderRadius = '50%';
+            circle.style.transform = 'translate(-50%, -50%)';
+            circle.style.animation = 'ripple 0.6s linear';
+            
+            this.appendChild(circle);
+            
+            setTimeout(() => circle.remove(), 600);
+        });
+    </script>
+</body>
+</html>
