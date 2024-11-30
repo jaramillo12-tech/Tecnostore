@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Tu tienda de tecnología</title>
+    <style>
+        /* Mantenemos todos los estilos existentes */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+ 
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+            color: #fff;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* ... [resto de los estilos existentes] ... */
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #4CAF50;
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 80px auto 2rem;
+            padding: 2rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            object-fit: cover;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        /* Carrito flotante */
+        .cart-modal {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: rgba(28, 28, 28, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            transition: right 0.3s ease;
+            z-index: 1001;
+        }
+
+        .cart-modal.active {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cart-total {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            right: 2rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #4CAF50;
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background: #45a049;
+        }
+
+        /* Nuevos estilos para los módulos agregados */
+        .search-section {
+            margin: 100px auto 20px;
+            max-width: 1200px;
+            padding: 1rem 2rem;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .advanced-search {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .advanced-search.active {
+            display: block;
+        }
+
+        .advanced-search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .advanced-search select,
+        .advanced-search input {
+            width: 100%;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.3rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .product-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .product-modal.active {
+            display: flex;
+        }
+
+        .product-modal-content {
+            background: rgba(28, 28, 28, 0.95);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+        }
+
+        .product-modal-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .quantity-selector button {
+            padding: 0.5rem 1rem;
+            background: #4CAF50;
+            border: none;
+            border-radius: 0.3rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        .quantity-selector span {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mantenemos la estructura de navegación existente -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-brand">TechStore</div>
+            <div class="nav-links">
+                <a href="#">Inicio</a>
+                <a href="#">Productos</a>
+                <a href="#">Ofertas</a>
+                <a href="#">Contacto</a>
+            </div>
+            <div class="cart-icon" id="cartIcon">
+                🛒 <span class="cart-count">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Nueva sección de búsqueda -->
+    <section class="search-section">
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Buscar productos...">
+            <button class="add-to-cart" id="toggleAdvanced">Búsqueda Avanzada</button>
+        </div>
+        <div class="advanced-search" id="advancedSearch">
+            <div class="advanced-search-grid">
+                <select id="categoryFilter">
+                    <option value="">Todas las categorías</option>
+                    <option value="computadores">Computadores</option>
+                    <option value="celulares">Celulares</option>
+                    <option value="accesorios">Accesorios</option>
+                    <option value="consolas">Consolas</option>
+                </select>
+                <input type="number" id="minPrice" placeholder="Precio mínimo">
+                <input type="number" id="maxPrice" placeholder="Precio máximo">
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <h1>Todos Nuestros Productos</h1>
+        <div class="products-grid" id="productsGrid">
+            <!-- Los productos se cargarán dinámicamente -->
+
+        </div>
+    </main>
+
+    <!-- Modal para detalles del producto -->
+    <div class="product-modal" id="productModal">
+        <div class="product-modal-content">
+            <button class="close-modal" id="closeProductModal">×</button>
+            <img src="" alt="" class="product-modal-image" id="modalImage">
+            <h2 id="modalTitle"></h2>
+            <p class="product-price" id="modalPrice"></p>
+            <p id="modalDescription"></p>
+            <div class="quantity-selector">
+                <button id="decreaseQuantity">-</button>
+                <span id="quantity">1</span>
+                <button id="increaseQuantity">+</button>
+            </div>
+            <button class="add-to-cart" id="modalAddToCart">Agregar al carrito</button>
+        </div>
+    </div>
+
+    <!-- Mantenemos el carrito modal existente -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h2>Tu Carrito</h2>
+            <button class="close-cart" id="closeCart">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Los items del carrito se cargarán dinámicamente -->
+        </div>
+        <div class="cart-total">
+            <h3>Total: $<span id="cartTotal">0</span></h3>
+            <button class="checkout-btn">Proceder al pago</button>
+        </div>
+    </div>
+
+    <script>
+        // Mantenemos los datos de productos existentes
+        const products = [
+            // ... tus productos existentes ...
+            {
+                id: 1,
+                name: "Computador de escritorio",
+                price: 12000000,
+                image: "https://th.bing.com/th/id/OIP.WhSVw3S2h0EzoUQdpN40rwHaFc?rs=1&pid=ImgDetMain"
+            },
+            {
+                id: 2,
+                name: "reloj inteligente xiaomi",
+                price: 899.999,
+                image: "https://realplaza.vtexassets.com/arquivos/ids/22647626/image-2da34dd9f2874ab2a086cdb0fbfbb3a8.jpg?v=637852428071000000"
+            },
+            {
+                id: 3,
+                name: "audifonos huawei",
+                price: 500000,
+                image: "https://th.bing.com/th/id/OIP.25g2-rYD7FXHe0VjoyfqCgAAAA?rs=1&pid=ImgDetMain"
+            },
+            {
+                id: 4,
+                name: "Pc gamer marca azus",
+                price: 3400000,
+                image: "https://th.bing.com/th/id/OIP.ceAFwQY6RIRtJuh2W_ioNAHaFl?rs=1&pid=ImgDetMain"
+            },
+            {
+                id: 5,
+                name: "iphone 16",
+                price: 5000000,
+                image: "https://th.bing.com/th/id/OIP.8Dlqh9JtULZd-Khg6qFsmQAAAA?rs=1&pid=ImgDetMain"
+            },
+            {
+                id: 6,
+                name: "Xbox series X",
+                price: 20000000,
+                image: "https://th.bing.com/th?id=OIF.F93VDVOlP7k%2fRUDU4LSgOQ&rs=1&pid=ImgDetMain"
+            },
+            {
+                id:7,
+                name:"Ps5 slim",
+                price: 2500000,
+                image: "https://r4k.com.au/wp-content/uploads/2023/12/buy-now-pay-later-sony-playstation-5-slim-console.jpg"
+
+            },
+            {
+                id:8,
+                name:"mando xbox blanco",
+                price: 500000,
+                image:"https://www.worten.es/i/298e1b1af1321a62e881dd77b8a143afd732dc71.jpg"
+
+            },
+            { id:9,
+            name:"mando xbox negro",
+            price:500000,
+            image:"https://th.bing.com/th/id/OIP.VlzKZ7la2UC01jj60iM_UgHaFG?rs=1&pid=ImgDetMain"
+            
+        },
+        {
+            id:10,
+            name: "tv samsung 50 pulgadas ",
+            price: 7000000,
+            image:"https://th.bing.com/th/id/OIP.P2JIVz7mFECyeIYj7fySzAHaHa?rs=1&pid=ImgDetMain"
+            
+
+        },
+        {
+            id:11,
+            name:"monitor LG 27 pulgadas",
+            price: 4000000,
+            image:"https://th.bing.com/th/id/OIP.vecUkCx9Kwyhqbz2Zngp4wHaE6?rs=1&pid=ImgDetMain"
+        },
+        {
+            id:12,
+            name:"celular xiaomi",
+            price: 750000,
+            image:"https://cdn1.coppel.com/images/catalog/mkp/7462/3000/74621454-1.jpg"
+
+        },
+        {
+            id:13,
+            name:"dron con camara 4k",
+            price: 6000000,
+            image:"https://th.bing.com/th/id/OIP.GbZZV9JpXIfPEDo-ZQzH4gHaE3?rs=1&pid=ImgDetMain"
+        },
+        {
+            id:14,
+            name:"camara canon",
+            price: 2500000,
+            image:"https://th.bing.com/th/id/OIP.LukRomVXDG8JEJ5Avkj29gHaGM?rs=1&pid=ImgDetMain"
+
+        },
+        {
+            id:15,
+            name:"mando ps5",
+            price: 4000000,
+            image:"https://th.bing.com/th/id/OIP.gh51XPq2eldjAIV6bF0NXgHaE8?rs=1&pid=ImgDetMain"
+        },
+        {
+            id:16,
+            name:"Xbox series S",
+            price: 450000,
+            image:"https://th.bing.com/th/id/OIP.0gQIfYruTg67ArxmsbfNdwAAAA?rs=1&pid=ImgDetMain"
+        },
+        {
+            id:17,
+            name:"gamepass xbox 12 meses",
+            price: 450000,
+            image:"https://th.bing.com/th/id/OIP.4VBuZ7Fs9Dd2p0pkgBxZ4AHaJJ?rs=1&pid=ImgDetMain"
+        },
+        {
+            id:18,
+            name:"reloj inteligente marca apple",
+            price: 400000,
+            image:"https://th.bing.com/th/id/OIP.llFs3Cpk57Ha8oWQe-8qhQHaHa?rs=1&pid=ImgDetMain"
+        },
+        {
+            id:19,
+            name:"playstation 4 pro",
+            price: 1500000,
+            image:"https://th.bing.com/th/id/R.c294baf6dfc985572ec94461f9fa4c78?rik=tsps6Nu%2fmnKCFg&pid=ImgRaw&r=0"
+        },
+        {
+            id:20,
+            name:"asistente alexa 5tha generacion",
+            price: 300000,
+            image:"https://th.bing.com/th/id/OIP.r-Kw2_9joBWcAoiyBjYriAAAAA?rs=1&pid=ImgDetMain"
+        },
+        {
+            id:21,
+            name:"cargador universal",
+            price: 100000,
+            image:"https://tiendaintelmax.net/product/images/1456"
+        },
+        {
+            id:22,
+            name:"antena Starklink standar",
+            price: 2200000,
+            image:"https://th.bing.com/th/id/R.cf05b6a9487cdb4795a686029501dce9?rik=J%2bCA4zvJoviYFg&pid=ImgRaw&r=0"
+        }
+        ];
+        let cart = [];
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.querySelector('.cart-count');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            // Actualizar contador
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            // Actualizar items
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <img src="${item.image}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 0.5rem;">
+                    <div>
+                        <h4>${item.name}</h4>
+                        <p>$${item.price} x ${item.quantity}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Actualizar total
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotal.textContent = total.toFixed(2);
+        }
+        // Nuevas variables para el estado
+        let currentQuantity = 1;
+        let selectedProduct = +1;
+
+        // Función mejorada para cargar productos con filtrado
+        function loadProducts(filters = {}) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = ''; // Limpiar grid
+
+            const filteredProducts = products.filter(product => {
+                const matchesSearch = !filters.search || 
+                    product.name.toLowerCase().includes(filters.search.toLowerCase());
+                const matchesCategory = !filters.category || 
+                    product.category === filters.category;
+                const matchesMinPrice = !filters.minPrice || 
+                    product.price >= filters.minPrice;
+                const matchesMaxPrice = !filters.maxPrice || 
+                    product.price <= filters.maxPrice;
+
+                return matchesSearch && matchesCategory && 
+                       matchesMinPrice && matchesMaxPrice;
+            });
+
+            filteredProducts.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" 
+                         class="product-image" onclick="showProductDetails(${product.id})">
+                    <h3 class="product-title">${product.name}</h3>
+                    <p class="product-price">$${product.price.toLocaleString()}</p>
+                    <button class="add-to-cart" onclick="addToCart(${product.id})">
+                        Agregar al carrito
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Función para mostrar detalles del producto
+        function showProductDetails(productId) {
+            selectedProduct = products.find(p => p.id === productId);
+            const modal = document.getElementById('productModal');
+            
+            document.getElementById('modalImage').src = selectedProduct.image;
+            document.getElementById('modalTitle').textContent = selectedProduct.name;
+            document.getElementById('modalPrice').textContent = 
+                `$${selectedProduct.price.toLocaleString()}`;
+            document.getElementById('modalDescription').textContent = 
+                selectedProduct.description || 'Descripción no disponible';
+            
+            currentQuantity = 1;
+            document.getElementById('quantity').textContent = currentQuantity;
+            
+            modal.classList.add('active');
+        }
+
+        // Eventos para el modal de producto
+        document.getElementById('closeProductModal').onclick = () => {
+            document.getElementById('productModal').classList.remove('active');
+        };
+
+        document.getElementById('increaseQuantity').onclick = () => {
+            currentQuantity++;
+            document.getElementById('quantity').textContent = currentQuantity;
+        };
+
+        document.getElementById('decreaseQuantity').onclick = () => {
+            if (currentQuantity > 1) {
+                currentQuantity--;
+                document.getElementById('quantity').textContent = currentQuantity;
+            }
+        };
+
+        document.getElementById('modalAddToCart').onclick = () => {
+            if (selectedProduct) {
+                addToCart(selectedProduct.id, currentQuantity);
+                document.getElementById('productModal').classList.remove('active');
+            }
+        };
+
+        // Funciones mejoradas del carrito
+        function addToCart(productId, quantity = 1) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ ...product, quantity: quantity });
+            }
+            
+            updateCartUI();
+        }
+
+        // Eventos de búsqueda
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const filters = {
+                search: e.target.value,
+                category: document.getElementById('categoryFilter').value,
+                minPrice: Number(document.getElementById('minPrice').value),
+                maxPrice: Number(document.getElementById('maxPrice').value)
+            };
+            loadProducts(filters);
+        });
+
+        document.getElementById('toggleAdvanced').onclick = () => {
+            document.getElementById('advancedSearch').classList.toggle('active');
+        };
+
+        ['categoryFilter', 'minPrice', 'maxPrice'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => {
+                const filters = {
+                    search: document.getElementById('searchInput').value,
+                    category: document.getElementById('categoryFilter').value,
+                    minPrice: Number(document.getElementById('minPrice').value),
+                    maxPrice: Number(document.getElementById('maxPrice').value)
+                };
+                loadProducts(filters);
+            });
+        });
+
+        // Mantener el resto de tu código existente...
+
+        
+        // [El código del carrito y la inicialización se mantiene igual]
+document.getElementById('cartIcon').addEventListener('click', () => {
+            document.getElementById('cartModal').classList.add('active');
+        });
+
+        document.getElementById('closeCart').addEventListener('click', () => {
+            document.getElementById('cartModal').classList.remove('active');
+        });
+        // Inicializar
+        window.onload = () => loadProducts();
+    </script>
+</body>
+</html>
